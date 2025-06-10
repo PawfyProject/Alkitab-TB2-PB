@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Alkitab Perjanjian Baru - OBS Plugin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tailwind CSS CDN for styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom styles for select arrow for better appearance */
+    select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem; /* Make space for the custom arrow */
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-indigo-950 text-white flex flex-col items-center justify-center p-4 font-serif">
+
+  <!-- Page Title -->
+  <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center text-emerald-300 drop-shadow-lg">
+    Alkitab Perjanjian Baru - OBS Plugin
+  </h1>
+
+  <!-- Loading and Error Display -->
+  <div id="loadingMessage" class="text-lg text-emerald-400 mb-4 hidden">Memuat data Alkitab...</div>
+  <div id="errorMessage" class="text-lg text-red-500 mb-4 hidden"></div>
+
+  <!-- Main content area -->
+  <div id="mainContent" class="hidden flex flex-col items-center justify-center w-full">
+    <!-- Controls Section - Dropdowns -->
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-2xl">
+      <!-- Book Select -->
+      <select id="bookSelect"
+        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500 hover:border-teal-500 transition duration-200 w-full md:w-auto">
+      </select>
+
+      <!-- Chapter Select -->
+      <select id="chapterSelect"
+        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500 hover:border-teal-500 transition duration-200 w-full md:w-auto">
+      </select>
+
+      <!-- Verse Select -->
+      <select id="verseSelect"
+        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500 hover:border-teal-500 transition duration-200 w-full md:w-auto">
+      </select>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="flex gap-4 mb-8">
+      <button onclick="goToPrevVerse()"
+        class="p-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full shadow-lg hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12"
+        aria-label="Previous Verse">
+        <!-- Arrow Left Icon SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m12 19-7-7 7-7" />
+          <path d="M19 12H5" />
+        </svg>
+      </button>
+      <button onclick="showVerse()"
+        class="p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12"
+        aria-label="Tampilkan Ayat">
+        <!-- Play/Show Icon SVG (example, can be changed) -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <button onclick="goToNextVerse()"
+        class="p-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full shadow-lg hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12"
+        aria-label="Next Verse">
+        <!-- Arrow Right Icon SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Search Section -->
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-2xl">
+      <input type="text" id="searchInput" placeholder="Cari kata atau frasa..."
+        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white w-full focus:outline-none focus:ring-2 focus:ring-purple-500 hover:border-purple-500 transition duration-200">
+      <button onclick="searchVerse()"
+        class="p-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:from-purple-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 w-full md:w-auto">
+        Cari Ayat
+      </button>
+    </div>
+
+    <!-- Verse Display Area -->
+    <div id="verseDisplay"
+      class="verse-display bg-indigo-900 p-8 rounded-xl shadow-2xl max-w-4xl w-full text-center min-h-[150px] flex items-center justify-center border border-indigo-800 overflow-y-auto max-h-[70vh]">
+      <p class="text-xl text-gray-400">Pilih Kitab, Pasal, dan Ayat, atau gunakan pencarian.</p>
+    </div>
+  </div>
+
+  <script>
+    let bibleData = {};
+    let currentBook = "";
+    let currentChapter = "";
+    let currentVerse = "";
+
+    // Get references to DOM elements
+    const bookSelect = document.getElementById("bookSelect");
+    const chapterSelect = document.getElementById("chapterSelect");
+    const verseSelect = document.getElementById("verseSelect");
+    const verseDisplay = document.getElementById("verseDisplay");
+    const loadingMessage = document.getElementById("loadingMessage");
+    const errorMessage = document.getElementById("errorMessage");
+    const mainContent = document.getElementById("mainContent");
+    const searchInput = document.getElementById("searchInput");
+
+    // Function to fetch and load the Bible data from alkitab_pb.json
+    async function loadBible() {
+      loadingMessage.classList.remove('hidden'); // Show loading message
+      mainContent.classList.add('hidden'); // Hide main content
+      errorMessage.classList.add('hidden'); // Hide any previous error messages
+
+      try {
+        const res = await fetch("alkitab_pb.json");
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        bibleData = await res.json();
+        populateBooks(); // Populate book dropdown
+        // Initialize current selections after data is loaded and dropdowns are populated
+        if (Object.keys(bibleData).length > 0) {
+          currentBook = Object.keys(bibleData)[0];
+          bookSelect.value = currentBook;
+          populateChapters();
+          if (Object.keys(bibleData[currentBook]).length > 0) {
+            currentChapter = Object.keys(bibleData[currentBook])[0];
+            chapterSelect.value = currentChapter;
+            populateVerses();
+            if (Object.keys(bibleData[currentBook][currentChapter]).length > 0) {
+              currentVerse = Object.keys(bibleData[currentBook][currentChapter])[0];
+              verseSelect.value = currentVerse;
+            }
+          }
+        }
+        showVerse(); // Display the first verse
+      } catch (e) {
+        console.error("Failed to load Bible data:", e);
+        errorMessage.textContent = "Gagal memuat data Alkitab. Pastikan 'alkitab_pb.json' ada dan benar.";
+        errorMessage.classList.remove('hidden'); // Show error message
+      } finally {
+        loadingMessage.classList.add('hidden'); // Hide loading message
+        mainContent.classList.remove('hidden'); // Show main content
+      }
+    }
+
+    // Populates the book selection dropdown
+    function populateBooks() {
+      bookSelect.innerHTML = ""; // Clear existing options
+      Object.keys(bibleData).forEach(book => {
+        bookSelect.add(new Option(book, book));
+      });
+    }
+
+    // Populates the chapter selection dropdown based on the selected book
+    function populateChapters() {
+      chapterSelect.innerHTML = ""; // Clear existing options
+      const chapters = bibleData[bookSelect.value] || {};
+      Object.keys(chapters).sort((a, b) => parseInt(a) - parseInt(b)).forEach(ch => {
+        chapterSelect.add(new Option("Pasal " + ch, ch));
+      });
+      // Set current chapter to the first available after repopulating
+      currentChapter = chapterSelect.value;
+      populateVerses(); // Then populate verses for the new chapter
+    }
+
+    // Populates the verse selection dropdown based on the selected book and chapter
+    function populateVerses() {
+      verseSelect.innerHTML = ""; // Clear existing options
+      const verses = bibleData[bookSelect.value][chapterSelect.value] || {};
+      Object.keys(verses).sort((a, b) => parseInt(a) - parseInt(b)).forEach(v => {
+        verseSelect.add(new Option("Ayat " + v, v));
+      });
+      // Set current verse to the first available after repopulating
+      currentVerse = verseSelect.value;
+    }
+
+    // Displays the currently selected verse based on dropdowns
+    function showVerse() {
+      currentBook = bookSelect.value;
+      currentChapter = chapterSelect.value;
+      currentVerse = verseSelect.value;
+
+      if (currentBook && currentChapter && currentVerse && bibleData[currentBook] && bibleData[currentBook][currentChapter]) {
+        const text = bibleData[currentBook][currentChapter][currentVerse];
+        verseDisplay.innerHTML = `
+          <p class="text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed">
+            <span class="font-bold">${currentBook} ${currentChapter}:${currentVerse}</span> - ${text}
+          </p>`;
+      } else {
+        verseDisplay.innerHTML = `<p class="text-xl text-gray-400">Pilih Kitab, Pasal, dan Ayat, atau gunakan pencarian.</p>`;
+      }
+    }
+
+    // Navigates to the next verse
+    function goToNextVerse() {
+      if (!currentBook || !currentChapter || !currentVerse) return;
+
+      const currentBookChapters = bibleData[currentBook];
+      const currentChapterVerses = currentBookChapters[currentChapter];
+      const verseNumbers = Object.keys(currentChapterVerses).map(Number).sort((a, b) => a - b);
+      const chapterNumbers = Object.keys(currentBookChapters).map(Number).sort((a, b) => a - b);
+      const bookNames = Object.keys(bibleData);
+
+      const currentVerseIndex = verseNumbers.indexOf(Number(currentVerse));
+      const currentChapterIndex = chapterNumbers.indexOf(Number(currentChapter));
+      const currentBookIndex = bookNames.indexOf(currentBook);
+
+      if (currentVerseIndex < verseNumbers.length - 1) {
+        // Move to the next verse in the current chapter
+        currentVerse = String(verseNumbers[currentVerseIndex + 1]);
+      } else if (currentChapterIndex < chapterNumbers.length - 1) {
+        // Move to the next chapter (first verse)
+        currentChapter = String(chapterNumbers[currentChapterIndex + 1]);
+        const nextChapterVerses = Object.keys(currentBookChapters[currentChapter]).map(Number).sort((a, b) => a - b);
+        currentVerse = String(nextChapterVerses[0]);
+        chapterSelect.value = currentChapter; // Update chapter dropdown
+        populateVerses(); // Repopulate verses for new chapter
+      } else if (currentBookIndex < bookNames.length - 1) {
+        // Move to the next book (first chapter, first verse)
+        currentBook = bookNames[currentBookIndex + 1];
+        bookSelect.value = currentBook; // Update book dropdown
+        populateChapters(); // Repopulate chapters for new book
+        currentChapter = Object.keys(bibleData[currentBook]).map(Number).sort((a, b) => a - b)[0]; // Set to first chapter
+        chapterSelect.value = currentChapter; // Update chapter dropdown
+        populateVerses(); // Repopulate verses for new chapter
+        currentVerse = Object.keys(bibleData[currentBook][currentChapter]).map(Number).sort((a, b) => a - b)[0]; // Set to first verse
+      }
+
+      verseSelect.value = currentVerse; // Update verse dropdown
+      showVerse(); // Display the new verse
+    }
+
+    // Navigates to the previous verse
+    function goToPrevVerse() {
+      if (!currentBook || !currentChapter || !currentVerse) return;
+
+      const currentBookChapters = bibleData[currentBook];
+      const currentChapterVerses = currentBookChapters[currentChapter];
+      const verseNumbers = Object.keys(currentChapterVerses).map(Number).sort((a, b) => a - b);
+      const chapterNumbers = Object.keys(currentBookChapters).map(Number).sort((a, b) => a - b);
+      const bookNames = Object.keys(bibleData);
+
+      const currentVerseIndex = verseNumbers.indexOf(Number(currentVerse));
+      const currentChapterIndex = chapterNumbers.indexOf(Number(currentChapter));
+      const currentBookIndex = bookNames.indexOf(currentBook);
+
+      if (currentVerseIndex > 0) {
+        // Move to the previous verse in the current chapter
+        currentVerse = String(verseNumbers[currentVerseIndex - 1]);
+      } else if (currentChapterIndex > 0) {
+        // Move to the previous chapter (last verse)
+        currentChapter = String(chapterNumbers[currentChapterIndex - 1]);
+        const prevChapterVerses = Object.keys(currentBookChapters[currentChapter]).map(Number).sort((a, b) => a - b);
+        currentVerse = String(prevChapterVerses[prevChapterVerses.length - 1]);
+        chapterSelect.value = currentChapter; // Update chapter dropdown
+        populateVerses(); // Repopulate verses for new chapter
+      } else if (currentBookIndex > 0) {
+        // Move to the previous book (last chapter, last verse)
+        currentBook = bookNames[currentBookIndex - 1];
+        bookSelect.value = currentBook; // Update book dropdown
+        populateChapters(); // Repopulate chapters for new book
+        currentChapter = Object.keys(bibleData[currentBook]).map(Number).sort((a, b) => a - b)[Object.keys(bibleData[currentBook]).length - 1]; // Set to last chapter
+        chapterSelect.value = currentChapter; // Update chapter dropdown
+        populateVerses(); // Repopulate verses for new chapter
+        currentVerse = Object.keys(bibleData[currentBook][currentChapter]).map(Number).sort((a, b) => a - b)[Object.keys(bibleData[currentBook][currentChapter]).length - 1]; // Set to last verse
+      }
+
+      verseSelect.value = currentVerse; // Update verse dropdown
+      showVerse(); // Display the new verse
+    }
+
+    // New function to search for verses
+    function searchVerse() {
+      const query = searchInput.value.toLowerCase().trim(); // Get search query and clean it
+      let resultsHtml = '';
+      let matchCount = 0;
+
+      if (query.length === 0) {
+        verseDisplay.innerHTML = `<p class="text-xl text-gray-400">Silakan masukkan kata kunci untuk pencarian.</p>`;
+        return;
+      }
+
+      // Iterate through all books, chapters, and verses to find matches
+      for (const bookName in bibleData) {
+        for (const chapterNum in bibleData[bookName]) {
+          for (const verseNum in bibleData[bookName][chapterNum]) {
+            const verseText = bibleData[bookName][chapterNum][verseNum];
+            if (verseText.toLowerCase().includes(query)) {
+              matchCount++;
+              // Highlight the query in the result
+              const highlightedText = verseText.replace(new RegExp(query, 'gi'), match => `<span class="bg-yellow-300 text-gray-900 px-1 rounded">${match}</span>`);
+              resultsHtml += `
+                <p class="text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed mb-4">
+                  <span class="font-bold">${bookName} ${chapterNum}:${verseNum}</span> - ${highlightedText}
+                </p>`;
+            }
+          }
+        }
+      }
+
+      if (matchCount > 0) {
+        verseDisplay.innerHTML = `
+          <h2 class="text-2xl font-semibold mb-4 text-emerald-200">Ditemukan ${matchCount} Ayat:</h2>
+          ${resultsHtml}`;
+      } else {
+        verseDisplay.innerHTML = `<p class="text-xl text-red-400">Tidak ditemukan ayat yang cocok dengan "${query}".</p>`;
+      }
+    }
+
+    // Event listeners for dropdown changes
+    bookSelect.addEventListener("change", () => {
+      populateChapters();
+      showVerse();
+    });
+
+    chapterSelect.addEventListener("change", () => {
+      populateVerses();
+      showVerse();
+    });
+
+    verseSelect.addEventListener("change", showVerse);
+
+    // Load Bible data when the page loads
+    window.onload = loadBible;
+  </script>
+</body>
+</html>
+
