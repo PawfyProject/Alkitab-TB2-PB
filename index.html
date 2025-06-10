@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Alkitab Perjanjian Baru - OBS Plugin</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tailwind CSS CDN for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Custom styles for select arrow for better appearance */
@@ -58,7 +59,7 @@
         width: 100%;
         padding: 1rem; /* Inner padding */
         overflow-y: auto; /* Enable vertical scrolling */
-        /* Max size for search results only, applied dynamically */
+        /* Max height will be controlled by max-h-[vh] classes */
     }
 
     .search-result-item, .chapter-verse-item {
@@ -90,15 +91,35 @@
 </head>
 <body class="min-h-screen bg-transparent text-white flex flex-col items-center justify-center p-4 font-tahoma-bold">
 
+  <!-- Page Title -->
   <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center text-emerald-300 drop-shadow-lg text-shadow-strong">
     Alkitab Perjanjian Baru - OBS Plugin
   </h1>
 
+  <!-- Loading and Error Display -->
   <div id="loadingMessage" class="text-lg text-emerald-400 mb-4 hidden text-shadow-black">Memuat data Alkitab...</div>
   <div id="errorMessage" class="text-lg text-red-500 mb-4 hidden text-shadow-black"></div>
 
+  <!-- Main content area -->
   <div id="mainContent" class="hidden flex flex-col items-center justify-center w-full">
 
+    <!-- Search Kitab & Pasal Inputs -->
+    <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-4 w-full max-w-2xl">
+      <input type="text" id="bookSearchInput" placeholder="Cari Kitab (misal: Matius)"
+        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white w-full focus:outline-none focus:ring-2 focus:ring-purple-500 hover:border-purple-500 transition duration-200 text-shadow-black">
+      <button onclick="searchBook()"
+        class="p-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:from-purple-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 w-full md:w-auto text-shadow-black">
+        Cari Kitab
+      </button>
+      <input type="text" id="chapterSearchInput" placeholder="Cari Pasal (misal: 5)"
+        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white w-full focus:outline-none focus:ring-2 focus:ring-purple-500 hover:border-purple-500 transition duration-200 text-shadow-black">
+      <button onclick="searchChapter()"
+        class="p-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg shadow-lg hover:from-purple-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 w-full md:w-auto text-shadow-black">
+        Cari Pasal
+      </button>
+    </div>
+
+    <!-- Dropdowns & Display Chapter Button -->
     <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-2xl">
       <select id="bookSelect"
         class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500 hover:border-teal-500 transition duration-200 w-full md:w-auto text-shadow-black">
@@ -118,10 +139,12 @@
       </button>
     </div>
 
+    <!-- Navigation Buttons for Single Verse -->
     <div class="flex gap-4 mb-8">
       <button onclick="goToPrevVerse()"
         class="p-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full shadow-lg hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12 text-shadow-black"
         aria-label="Previous Verse">
+        <!-- Arrow Left Icon SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m12 19-7-7 7-7" />
@@ -131,11 +154,13 @@
       <button onclick="showVerse()"
         class="p-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12 text-shadow-black"
         aria-label="Tampilkan Ayat">
+        <!-- Play/Show Icon SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
       <button onclick="goToNextVerse()"
         class="p-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full shadow-lg hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12 text-shadow-black"
         aria-label="Next Verse">
+        <!-- Arrow Right Icon SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14" />
@@ -144,6 +169,7 @@
       </button>
     </div>
 
+    <!-- Global Verse Search Input -->
     <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-2xl">
       <input type="text" id="searchInput" placeholder="Cari ayat (kata atau frasa)..."
         class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white w-full focus:outline-none focus:ring-2 focus:ring-purple-500 hover:border-purple-500 transition duration-200 text-shadow-black">
@@ -153,8 +179,10 @@
       </button>
     </div>
 
+    <!-- Verse Display Area (dynamic content) -->
     <div id="verseDisplay"
       class="bg-indigo-900 p-8 rounded-xl shadow-2xl w-full max-w-4xl border border-indigo-800 flex items-center justify-center">
+      <!-- Content will be dynamically inserted here by JS functions -->
       <div class="verse-display-wrapper">
         <p class="text-xl text-gray-400 text-shadow-black verse-text-single">Pilih Kitab, Pasal, dan Ayat, atau gunakan pencarian.</p>
       </div>
@@ -175,6 +203,8 @@
     const loadingMessage = document.getElementById("loadingMessage");
     const errorMessage = document.getElementById("errorMessage");
     const mainContent = document.getElementById("mainContent");
+    const bookSearchInput = document.getElementById("bookSearchInput");
+    const chapterSearchInput = document.getElementById("chapterSearchInput");
     const searchInput = document.getElementById("searchInput");
 
     // --- Core Data Loading and Population ---
@@ -266,8 +296,10 @@
             <p class="text-xl text-gray-400 text-shadow-black verse-text-single">Pilih Kitab, Pasal, dan Ayat, atau gunakan pencarian.</p>
           </div>`;
       }
-      // Reset search input when displaying single verse
+      // Reset search inputs when displaying single verse
       searchInput.value = '';
+      bookSearchInput.value = '';
+      chapterSearchInput.value = '';
     }
 
     // Displays all verses for the selected chapter
@@ -284,7 +316,7 @@
       }
 
       let chapterHtml = `
-        <div class="chapter-verses-container w-full max-w-[600px] max-h-[600px] mx-auto bg-indigo-900 p-6 rounded-lg shadow-xl overflow-y-auto border border-indigo-800">
+        <div class="chapter-verses-container w-full max-h-[70vh] md:max-h-[80vh] mx-auto overflow-y-auto bg-indigo-900 p-6 rounded-lg shadow-xl border border-indigo-800">
           <h2 class="text-2xl md:text-3xl font-tahoma-bold text-white text-shadow-strong mb-4 text-center">
             ${currentBook} Pasal ${currentChapter}
           </h2>`;
@@ -305,8 +337,10 @@
 
       chapterHtml += `</div>`;
       verseDisplay.innerHTML = chapterHtml;
-       // Reset search input when displaying full chapter
-       searchInput.value = '';
+       // Reset search inputs when displaying full chapter
+      searchInput.value = '';
+      bookSearchInput.value = '';
+      chapterSearchInput.value = '';
     }
 
 
@@ -381,6 +415,68 @@
 
     // --- Search Functions ---
 
+    // Searches for a book by name and updates the book dropdown
+    function searchBook() {
+      const query = bookSearchInput.value.toLowerCase().trim();
+      if (!query) {
+        populateBooks(); // If query is empty, show all books
+        showVerse(); // Show default verse
+        return;
+      }
+
+      const bookNames = Object.keys(bibleData);
+      const foundBook = bookNames.find(name => name.toLowerCase().includes(query));
+
+      if (foundBook) {
+        bookSelect.value = foundBook;
+        populateChapters();
+        showVerse(); // Display first verse of the found book
+      } else {
+        verseDisplay.innerHTML = `
+          <div class="verse-display-wrapper">
+            <p class="text-xl text-red-400 text-shadow-black verse-text-single">Kitab "${bookSearchInput.value}" tidak ditemukan.</p>
+          </div>`;
+      }
+      // Clear other search inputs
+      chapterSearchInput.value = '';
+      searchInput.value = '';
+    }
+
+    // Searches for a chapter by number in the current book and displays all verses
+    function searchChapter() {
+      const query = chapterSearchInput.value.trim();
+      if (!query) {
+        displayChapterVerses(); // If query is empty, just display current chapter
+        return;
+      }
+
+      currentBook = bookSelect.value;
+      if (!currentBook || !bibleData[currentBook]) {
+        verseDisplay.innerHTML = `
+          <div class="verse-display-wrapper">
+            <p class="text-xl text-red-400 text-shadow-black verse-text-single">Silakan pilih Kitab terlebih dahulu.</p>
+          </div>`;
+        return;
+      }
+
+      const chapterNumbers = Object.keys(bibleData[currentBook]).map(Number).sort((a, b) => a - b);
+      const foundChapter = chapterNumbers.find(ch => String(ch) === query);
+
+      if (foundChapter) {
+        chapterSelect.value = String(foundChapter);
+        populateVerses(); // Repopulate verses for the found chapter
+        displayChapterVerses(); // Display all verses of this chapter
+      } else {
+        verseDisplay.innerHTML = `
+          <div class="verse-display-wrapper">
+            <p class="text-xl text-red-400 text-shadow-black verse-text-single">Pasal "${chapterSearchInput.value}" tidak ditemukan di ${currentBook}.</p>
+          </div>`;
+      }
+      // Clear other search inputs
+      bookSearchInput.value = '';
+      searchInput.value = '';
+    }
+
     // Searches for verses by content across the entire Bible
     function searchVerse() {
       const query = searchInput.value.toLowerCase().trim();
@@ -408,7 +504,7 @@
               resultsHtml += `
                 <div class="search-result-item">
                     <p class="text-lg md:text-xl font-tahoma-bold text-white text-shadow-black leading-relaxed mb-4">
-                        ${highlightedText}
+                        <span class="font-extrabold">${bookName} ${chapterNum}:${verseNum}</span> - ${highlightedText}
                     </p>
                     <div class="verse-reference text-xs md:text-sm text-gray-400 text-shadow-black">
                         ${bookName} ${chapterNum}:${verseNum}
@@ -421,7 +517,7 @@
 
       if (matchCount > 0) {
         verseDisplay.innerHTML = `
-          <div class="search-results-container w-full max-w-[600px] max-h-[600px] mx-auto overflow-y-auto bg-indigo-900 p-6 rounded-lg shadow-xl border border-indigo-800">
+          <div class="search-results-container w-full max-w-4xl max-h-[70vh] md:max-h-[80vh] mx-auto overflow-y-auto bg-indigo-900 p-6 rounded-lg shadow-xl border border-indigo-800">
             <h2 class="text-2xl md:text-3xl font-tahoma-bold text-white text-shadow-strong mb-4 text-center">
               Ditemukan ${matchCount} Ayat:
             </h2>
@@ -433,17 +529,14 @@
             <p class="text-xl text-red-400 text-shadow-black verse-text-single">Tidak ditemukan ayat yang cocok dengan "${query}".</p>
           </div>`;
       }
+      // Clear other search inputs
+      bookSearchInput.value = '';
+      chapterSearchInput.value = '';
     }
 
     // --- Event Listeners ---
-    bookSelect.addEventListener("change", () => {
-        populateChapters();
-        showVerse();
-    });
-    chapterSelect.addEventListener("change", () => {
-        populateVerses();
-        showVerse();
-    });
+    bookSelect.addEventListener("change", showVerse);
+    chapterSelect.addEventListener("change", showVerse);
     verseSelect.addEventListener("change", showVerse);
 
     // Load Bible data when the page loads
@@ -451,3 +544,4 @@
   </script>
 </body>
 </html>
+
