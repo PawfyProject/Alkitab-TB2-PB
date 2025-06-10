@@ -269,8 +269,10 @@
         verseDisplay.innerHTML = `
           <div class="verse-display-wrapper">
             <p class="text-100% md:text-4xl lg:text-5xl font-tahoma-bold text-white text-shadow-strong leading-relaxed verse-text-single">
-              ${text}\n${currentBook} ${currentChapter}:${currentVerse} (TB2)
+            ${vText}
             </p>
+            <div class="verse-reference text-xs md:text-sm text-gray-300 text-shadow-black">
+              ${currentBook} ${currentChapter}:${vNum} (TB2)
             </div>
           </div>`;
       } else {
@@ -310,7 +312,7 @@
         chapterHtml += `
           <div class="chapter-verse-item">
             <p class="text-lg md:text-xl font-tahoma-bold text-white text-shadow-black leading-relaxed">
-              ${text}\n${currentBook} ${currentChapter}:${currentVerse} (TB2)
+              ${text}\n${currentBook} ${currentChapter}:${currentVerse} (TB2)  
             </p>
           </div>`;
       });
