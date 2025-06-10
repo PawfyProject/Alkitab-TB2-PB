@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <title>Alkitab Perjanjian Baru - TB2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Tailwind CSS CDN for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Custom styles for select arrow for better appearance */
     select {
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3e%3c/svg%3e");
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='white'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3e%3c/svg%3e");
       background-repeat: no-repeat;
       background-position: right 0.75rem center;
       background-size: 1.5em 1.5em;
@@ -17,43 +16,34 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-indigo-950 text-white flex flex-col items-center justify-center p-4 font-serif">
+<body class="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4 font-serif font-bold">
 
-  <!-- Page Title -->
-  <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center text-emerald-300 drop-shadow-lg">
+  <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center drop-shadow-lg">
     Alkitab Perjanjian Baru - TB2
   </h1>
 
-  <!-- Loading and Error Display -->
-  <div id="loadingMessage" class="text-lg text-emerald-400 mb-4 hidden">Memuat data Alkitab...</div>
-  <div id="errorMessage" class="text-lg text-red-500 mb-4 hidden"></div>
+  <div id="loadingMessage" class="text-lg mb-4 hidden drop-shadow">Memuat data Alkitab...</div>
+  <div id="errorMessage" class="text-lg mb-4 hidden drop-shadow"></div>
 
-  <!-- Main content area -->
   <div id="mainContent" class="hidden flex flex-col items-center justify-center w-full">
-    <!-- Controls Section -->
     <div class="flex flex-col md:flex-row items-center justify-center gap-4 mb-8 w-full max-w-2xl">
-      <!-- Book Select -->
       <select id="bookSelect"
-        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500 hover:border-teal-500 transition duration-200 w-full md:w-auto">
+        class="p-3 bg-transparent border border-gray-600 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-white hover:border-white transition duration-200 w-full md:w-auto">
       </select>
 
-      <!-- Chapter Select -->
       <select id="chapterSelect"
-        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500 hover:border-teal-500 transition duration-200 w-full md:w-auto">
+        class="p-3 bg-transparent border border-gray-600 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-white hover:border-white transition duration-200 w-full md:w-auto">
       </select>
 
-      <!-- Verse Select -->
       <select id="verseSelect"
-        class="p-3 bg-indigo-900 border border-indigo-800 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-teal-500 hover:border-teal-500 transition duration-200 w-full md:w-auto">
+        class="p-3 bg-transparent border border-gray-600 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-white hover:border-white transition duration-200 w-full md:w-auto">
       </select>
     </div>
 
-    <!-- Navigation Buttons -->
     <div class="flex gap-4 mb-8">
       <button onclick="goToPrevVerse()"
-        class="p-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full shadow-lg hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12"
+        class="p-3 border border-gray-500 hover:border-white text-white rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12"
         aria-label="Previous Verse">
-        <!-- Arrow Left Icon SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m12 19-7-7 7-7" />
@@ -61,9 +51,8 @@
         </svg>
       </button>
       <button onclick="goToNextVerse()"
-        class="p-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-full shadow-lg hover:from-teal-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12"
+        class="p-3 border border-gray-500 hover:border-white text-white rounded-full shadow-lg focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-75 transition duration-300 transform active:scale-95 text-xl flex items-center justify-center w-12 h-12"
         aria-label="Next Verse">
-        <!-- Arrow Right Icon SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14" />
@@ -72,10 +61,9 @@
       </button>
     </div>
 
-    <!-- Verse Display Area -->
     <div id="verseDisplay"
-      class="verse-display bg-indigo-900 p-8 rounded-xl shadow-2xl max-w-4xl w-full text-center min-h-[150px] flex items-center justify-center border border-indigo-800">
-      <p class="text-xl text-gray-400">Pilih Kitab, Pasal, dan Ayat</p>
+      class="verse-display border border-gray-600 p-8 rounded-xl max-w-4xl w-full text-center min-h-[150px] flex items-center justify-center">
+      <p class="text-xl drop-shadow">Pilih Kitab, Pasal, dan Ayat</p>
     </div>
   </div>
 
@@ -173,11 +161,11 @@
       if (currentBook && currentChapter && currentVerse && bibleData[currentBook] && bibleData[currentBook][currentChapter]) {
         const text = bibleData[currentBook][currentChapter][currentVerse];
         verseDisplay.innerHTML = `
-          <p class="text-2xl md:text-3xl lg:text-4xl font-light leading-relaxed">
-            <span class="font-bold">${currentBook} ${currentChapter}:${currentVerse}</span> - ${text}
+          <p class="text-2xl md:text-3xl lg:text-4xl leading-relaxed drop-shadow">
+            ${currentBook} ${currentChapter}:${currentVerse} - ${text}
           </p>`;
       } else {
-        verseDisplay.innerHTML = `<p class="text-xl text-gray-400">Pilih Kitab, Pasal, dan Ayat</p>`;
+        verseDisplay.innerHTML = `<p class="text-xl drop-shadow">Pilih Kitab, Pasal, dan Ayat</p>`;
       }
     }
 
@@ -277,4 +265,3 @@
   </script>
 </body>
 </html>
-
