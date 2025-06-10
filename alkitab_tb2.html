@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Alkitab Perjanjian Baru - OBS Plugin</title>
+  <title>Alkitab Perjanjian Baru - Terjemahan Baru 2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Tailwind CSS CDN for styling -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -47,7 +47,7 @@
 
   <!-- Page Title -->
   <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center text-emerald-300 drop-shadow-lg">
-    Alkitab Perjanjian Baru - OBS Plugin
+    Alkitab Perjanjian Baru - Terjemahan Baru 2
   </h1>
 
   <!-- Loading and Error Display -->
@@ -172,7 +172,7 @@
         showVerse(); // Display the first verse
       } catch (e) {
         console.error("Failed to load Bible data:", e);
-        errorMessage.textContent = "Gagal memuat data Alkitab. Pastikan 'alkitab_pb.json' ada dan benar.";
+        errorMessage.textContent = "Gagal memuat data Alkitab";
         errorMessage.classList.remove('hidden'); // Show error message
       } finally {
         loadingMessage.classList.add('hidden'); // Hide loading message
